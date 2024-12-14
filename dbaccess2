@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# dbaccess2 script
+
+# Define MySQL credentials
+MYSQL_USER="root"
+MYSQL_PASSWORD="Admin@24482448"
+
+# Check if query is provided
+if [ -z "$1" ]; then
+  echo "Please provide a SQL query."
+  exit 1
+fi
+
+# Set MYSQL_PWD environment variable to avoid passing password on the command line
+export MYSQL_PWD="$MYSQL_PASSWORD"
+
+# Get the query input and database choice
+query=$(cat)
+db=$1
+
+# Define function to run the query on the database and show the result
+run_query() {
+  local query=$1
+  local db=$2
+  # Check if the database is valid (db1 or db2)
+  if [ "$db" == "db1" ] || [ "$db" == "db2" ]; then
+    # Run the query without asking for password and show it in a normal table format
+    echo "SQL Query: $query"
+    mysql -u "$MYSQL_USER" -D "$db" -e "$query" --table
+  else
+    echo "Invalid database. Please use db1 or db2."
+    exit 1
+  fi
+}
+
+# Run the query function
+run_query "$query" "$db"
+
+# Unset MYSQL_PWD to avoid it lingering in the environment
+unset MYSQL_PWD
+
